@@ -3,7 +3,7 @@
 // === CONFIGURAÇÃO (ALTERE PARA SEU REPOSITÓRIO) ===
 const GITHUB_REPO = 'marcilioapd/SiteHinos'; // Ex: 'joao/hinos-app'
 const GITHUB_FILE = 'data.json';
-const GITHUB_TOKEN = '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'; // 🔐 Deixe vazio ou adicione seu token (não envie público!)
+const GITHUB_TOKEN = ''; // 🔐 Deixe vazio ou adicione seu token (não envie público!)
 
 // === Elementos ===
 const musicForm = document.getElementById('musicForm');
