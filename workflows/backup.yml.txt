@@ -1,0 +1,33 @@
+name: Backup Automático de Hinos
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Criar pasta de backups
+        run: mkdir -p backups
+
+      - name: Fazer backup
+        run: |
+          if [ -f data.json ]; then
+            cp data.json backups/hinos-$(date +%Y-%m-%d).json
+          else
+            echo "[]" > data.json
+            cp data.json backups/hinos-$(date +%Y-%m-%d).json
+          fi
+
+      - name: Commit e Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add backups/
+          git commit -m "🔧 Backup automático: $(date)" || echo "Sem mudanças"
+          git push
