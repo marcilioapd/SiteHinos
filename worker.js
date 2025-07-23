@@ -1,14 +1,11 @@
-// worker.js - Roda em background, sem travar a UI
-
 self.onmessage = function(e) {
   const { musicList, query } = e.data;
+  const q = (query || '').toLowerCase().trim();
 
-  if (!query || query.trim() === '') {
+  if (!q) {
     self.postMessage(musicList);
     return;
   }
-
-  const q = query.toLowerCase();
 
   const results = musicList.filter(music =>
     music.title.toLowerCase().includes(q) ||
