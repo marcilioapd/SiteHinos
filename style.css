@@ -309,3 +309,134 @@ body.dark .pagination button.active {
 body.dark .music-actions button {
   background: #8e44ad;
 }
+/* Modal de Edição */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  transform: translateY(-20px);
+  transition: transform 0.3s;
+}
+
+.modal-overlay.active .modal {
+  transform: translateY(0);
+}
+
+.modal h2 {
+  margin-bottom: 15px;
+  color: #2c3e50;
+  font-size: 1.3em;
+}
+
+.modal input, .modal textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1em;
+}
+
+.modal .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.modal button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.modal button.cancel {
+  background: #95a5a6;
+  color: white;
+}
+
+.modal button.save {
+  background: #27ae60;
+  color: white;
+}
+
+.modal button.delete {
+  background: #e74c3c;
+  color: white;
+}
+
+body.dark .modal {
+  background: #2d2d2d;
+  color: #eee;
+}
+
+body.dark .modal input, 
+body.dark .modal textarea {
+  background: #333;
+  color: #eee;
+  border-color: #555;
+}
+
+body.dark .modal h2 {
+  color: #ecf0f1;
+}
+
+/* Botões de ação na lista */
+.music-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.music-actions button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.music-actions button.edit {
+  background: #9b59b6;
+  color: white;
+}
+
+.music-actions button.delete {
+  background: #e74c3c;
+  color: white;
+}
+
+body.dark .music-actions button.edit {
+  background: #8e44ad;
+}
+
+body.dark .music-actions button.delete {
+  background: #c0392b;
+}
