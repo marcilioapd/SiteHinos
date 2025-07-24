@@ -51,7 +51,9 @@ function renderResults() {
     return;
   }
 
-  pageItems.forEach((music, index) => {
+  pageItems.forEach((music, pageIndex) => {
+    const globalIndex = (currentPage - 1) * 10 + pageIndex;
+
     const item = document.createElement('div');
     item.className = 'music-item';
 
@@ -62,21 +64,18 @@ function renderResults() {
       return text.replace(regex, '<mark>$1</mark>');
     };
 
-    // ✅ SEM "Autor:", apenas o nome em negrito
     item.innerHTML = `
       <h3>${hl(music.title)}</h3>
       <p><strong>${hl(music.artist)}</strong></p>
-      <div class="lyrics-content" id="lyrics-${index}">${hl(music.lyrics)}</div>
+      <div class="lyrics-content" id="lyrics-${pageIndex}">${hl(music.lyrics)}</div>
       <div class="music-actions">
-        <button class="edit-btn" data-index="${index}">✏️ Editar</button>
+        <button class="edit-btn" data-index="${globalIndex}">✏️ Editar</button>
       </div>
     `;
 
-    // Esconde a letra por padrão
-    const lyricsDiv = document.getElementById(`lyrics-${index}`);
+    const lyricsDiv = document.getElementById(`lyrics-${pageIndex}`);
     if (lyricsDiv) lyricsDiv.style.display = 'none';
 
-    // Clique na música (não no botão) → mostra/oculta letra
     item.addEventListener('click', (e) => {
       if (!e.target.classList.contains('edit-btn')) {
         if (lyricsDiv) {
@@ -88,12 +87,17 @@ function renderResults() {
     resultsContainer.appendChild(item);
   });
 
-  // Eventos de edição
+  // Adiciona eventos de edição
   document.querySelectorAll('.edit-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const index = parseInt(e.target.dataset.index);
-      openEditModal(musicList[index], index);
+      if (index >= 0 && index < musicList.length) {
+        openEditModal(musicList[index], index);
+      } else {
+        alert('Erro: música não encontrada.');
+        console.error('Índice inválido:', index);
+      }
     });
   });
 }
@@ -138,6 +142,11 @@ function handleSearch() {
 
 // ================== Editar Música ==================
 function openEditModal(music, index) {
+  if (!music) {
+    alert('Erro: não foi possível carregar a música.');
+    return;
+  }
+
   const title = prompt('Nome da música:', music.title);
   if (title === null) return;
 
@@ -152,7 +161,7 @@ function openEditModal(music, index) {
   alert('Música atualizada com sucesso!');
 }
 
-// ================== Firebase (certifique-se que musicRef já foi definido no HTML) ==================
+// ================== Firebase ==================
 if (typeof musicRef === 'undefined') {
   console.error('❌ Erro: musicRef não está definido. Verifique o index.html');
 } else {
@@ -222,4 +231,28 @@ exportBtn.addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-importFile.addEventListener('change', (e
+importFile.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const imported = JSON.parse(event.target.result);
+      if (Array.isArray(imported)) {
+        musicList = imported;
+        saveToFirebase(musicList);
+        alert(`Importado: ${imported.length} músicas.`);
+      }
+    } catch (err) {
+      alert('Erro ao ler o arquivo.');
+    }
+  };
+  reader.readAsText(file);
+  importFile.value = '';
+});
+
+// ================== Inicialização ==================
+// ❌ Removido: saveToLocalStorage(musicList); → estava sobrescrevendo dados
+searchInput.addEventListener('input', handleSearch);
+
+console.log('✅ SiteHinos carregado. Aguardando dados do Firebase...');
