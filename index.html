@@ -6,32 +6,31 @@
   <title>Letras de Músicas</title>
   <link rel="stylesheet" href="style.css" />
   
-  <!-- Firebase SDK - Namespaced (funciona direto no navegador) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <!-- Firebase SDK - Modo compatível (funciona direto no navegador) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-<script>
-  // Sua configuração do Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyCU6N52_f4JA2xbG-l6OALXK4s_RKyAOSI",
-    authDomain: "site-hinos.firebaseapp.com",
-    databaseURL: "https://site-hinos-default-rtdb.firebaseio.com",
-    projectId: "site-hinos",
-    storageBucket: "site-hinos.firebasestorage.app",
-    messagingSenderId: "1085753997667",
-    appId: "1:1085753997667:web:ed58e1628c3c0b4aa5fb56",
-    measurementId: "G-Y4HDH364FH"
-  };
+  <script>
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCU6N52_f4JA2xbG-l6OALXK4s_RKyAOSI",
+      authDomain: "site-hinos.firebaseapp.com",
+      databaseURL: "https://site-hinos-default-rtdb.firebaseio.com",
+      projectId: "site-hinos",
+      storageBucket: "site-hinos.firebasestorage.app",
+      messagingSenderId: "1085753997667",
+      appId: "1:1085753997667:web:ed58e1628c3c0b4aa5fb56"
+    };
 
-  // Inicializa o Firebase
-  firebase.initializeApp(firebaseConfig);
+    // Inicializa o Firebase
+    firebase.initializeApp(firebaseConfig);
 
-  // Referência para o Realtime Database
-  const db = firebase.database();
-  const musicRef = db.ref('musicas');
+    // Referência ao banco de dados
+    const db = firebase.database();
+    const musicRef = db.ref('musicas');
 
-  console.log('✅ Firebase inicializado com sucesso!');
-</script>
+    console.log('✅ Firebase inicializado');
+  </script>
 </head>
 <body>
   <div class="container">
