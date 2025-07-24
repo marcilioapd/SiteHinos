@@ -5,6 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Letras de Músicas</title>
   <link rel="stylesheet" href="style.css" />
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+
+  <script>
+    // 🔥 Substitua com suas credenciais do Firebase
+    const firebaseConfig = {
+         apiKey: "AIzaSyD...",
+         authDomain: "site-hinos.firebaseapp.com",
+         databaseURL: "https://site-hinos-default-rtdb.firebaseio.com",
+         projectId: "site-hinos",
+         storageBucket: "site-hinos.appspot.com",
+         messagingSenderId: "123456789",
+         appId: "1:123456789:web:abc123..."
+    };
+
+    // Inicializa o Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const musicRef = db.ref('musicas');
+  </script>
 </head>
 <body>
   <div class="container">
@@ -13,7 +35,6 @@
       <button id="themeToggle" title="Alternar modo escuro">🌙</button>
     </header>
 
-    <!-- Formulário de Cadastro -->
     <section class="form-section">
       <h2>Cadastrar Música</h2>
       <form id="musicForm">
@@ -24,24 +45,20 @@
       </form>
     </section>
 
-    <!-- Backup: Exportar / Importar -->
     <section class="backup-section">
       <button id="exportBtn">Exportar Backup (JSON)</button>
       <label for="importFile" class="btn">Importar Backup</label>
       <input type="file" id="importFile" accept=".json" hidden />
     </section>
 
-    <!-- Barra de Pesquisa -->
     <section class="search-section">
       <input type="text" id="searchInput" placeholder="Pesquisar música, autor ou trecho da letra..." />
     </section>
 
-    <!-- Lista de Resultados -->
     <section class="results-section">
       <div id="results"></div>
     </section>
 
-    <!-- Paginação -->
     <div class="pagination" id="pagination"></div>
   </div>
 
