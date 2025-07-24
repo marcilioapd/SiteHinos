@@ -1,4 +1,4 @@
-// script.js - Letras de Músicas com Firebase (CORRIGIDO)
+// script.js - Letras de Músicas com Firebase (Atualizado)
 
 const musicForm = document.getElementById('musicForm');
 const searchInput = document.getElementById('searchInput');
@@ -13,6 +13,7 @@ let filteredList = [];
 let currentPage = 1;
 let worker = null;
 let firstSync = true;
+let editingIndex = null; // Para edição
 
 // ================== Modo Escuro ==================
 if (localStorage.getItem('darkMode') === 'true') {
@@ -38,7 +39,7 @@ try {
   worker = null;
 }
 
-// ================== Renderização com Botão de Editar ==================
+// ================== Renderização (só o nome da música) ==================
 function renderResults() {
   resultsContainer.innerHTML = '';
   const start = (currentPage - 1) * 10;
@@ -64,12 +65,16 @@ function renderResults() {
       return text.replace(regex, '<mark>$1</mark>');
     };
 
+    // ✅ Mostra só o nome da música na lista
     item.innerHTML = `
       <h3>${hl(music.title)}</h3>
-      <p><strong>${hl(music.artist)}</strong></p>
-      <div class="lyrics-content" id="lyrics-${pageIndex}">${hl(music.lyrics)}</div>
+      <div class="lyrics-content" id="lyrics-${pageIndex}">
+        <p><strong>Autor:</strong> ${hl(music.artist)}</p>
+        <pre>${hl(music.lyrics)}</pre>
+      </div>
       <div class="music-actions">
-        <button class="edit-btn" data-index="${globalIndex}">✏️ Editar</button>
+        <button class="edit edit-btn" data-index="${globalIndex}">✏️ Editar</button>
+        <button class="delete delete-btn" data-index="${globalIndex}">🗑️ Excluir</button>
       </div>
     `;
 
@@ -77,7 +82,7 @@ function renderResults() {
     if (lyricsDiv) lyricsDiv.style.display = 'none';
 
     item.addEventListener('click', (e) => {
-      if (!e.target.classList.contains('edit-btn')) {
+      if (!e.target.classList.contains('edit-btn') && !e.target.classList.contains('delete-btn')) {
         if (lyricsDiv) {
           lyricsDiv.style.display = lyricsDiv.style.display === 'block' ? 'none' : 'block';
         }
@@ -87,16 +92,27 @@ function renderResults() {
     resultsContainer.appendChild(item);
   });
 
-  // Adiciona eventos de edição
+  // Eventos de editar
   document.querySelectorAll('.edit-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const index = parseInt(e.target.dataset.index);
       if (index >= 0 && index < musicList.length) {
         openEditModal(musicList[index], index);
-      } else {
-        alert('Erro: música não encontrada.');
-        console.error('Índice inválido:', index);
+      }
+    });
+  });
+
+  // Eventos de excluir
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const index = parseInt(e.target.dataset.index);
+      if (confirm('Tem certeza que deseja excluir esta música?')) {
+        musicList.splice(index, 1);
+        saveToFirebase(musicList);
+        renderResults();
+        renderPagination();
       }
     });
   });
@@ -140,25 +156,62 @@ function handleSearch() {
   }, 300);
 }
 
-// ================== Editar Música ==================
+// ================== Modal de Edição Bonito ==================
 function openEditModal(music, index) {
-  if (!music) {
-    alert('Erro: não foi possível carregar a música.');
-    return;
-  }
+  editingIndex = index;
 
-  const title = prompt('Nome da música:', music.title);
-  if (title === null) return;
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay active';
 
-  const artist = prompt('Autor:', music.artist);
-  if (artist === null) return;
+  modal.innerHTML = `
+    <div class="modal">
+      <h2>Editar Música</h2>
+      <input type="text" id="modal-title" value="${music.title}" placeholder="Nome da música" />
+      <input type="text" id="modal-artist" value="${music.artist}" placeholder="Autor" />
+      <textarea id="modal-lyrics" placeholder="Letra da música" rows="6">${music.lyrics}</textarea>
+      <div class="modal-actions">
+        <button class="cancel">Cancelar</button>
+        <button class="delete" id="modal-delete">Excluir</button>
+        <button class="save">Salvar</button>
+      </div>
+    </div>
+  `;
 
-  const lyrics = prompt('Letra da música:', music.lyrics);
-  if (lyrics === null) return;
+  document.body.appendChild(modal);
 
-  musicList[index] = { title, artist, lyrics };
-  saveToFirebase(musicList);
-  alert('Música atualizada com sucesso!');
+  const saveBtn = modal.querySelector('.save');
+  const cancelBtn = modal.querySelector('.cancel');
+  const deleteBtn = modal.querySelector('#modal-delete');
+
+  saveBtn.addEventListener('click', () => {
+    const title = document.getElementById('modal-title').value.trim();
+    const artist = document.getElementById('modal-artist').value.trim();
+    const lyrics = document.getElementById('modal-lyrics').value.trim();
+
+    if (title && artist && lyrics) {
+      musicList[index] = { title, artist, lyrics };
+      saveToFirebase(musicList);
+      modal.remove();
+      renderResults();
+      renderPagination();
+    } else {
+      alert('Todos os campos são obrigatórios.');
+    }
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    modal.remove();
+  });
+
+  deleteBtn.addEventListener('click', () => {
+    if (confirm('Tem certeza que deseja excluir esta música?')) {
+      musicList.splice(index, 1);
+      saveToFirebase(musicList);
+      modal.remove();
+      renderResults();
+      renderPagination();
+    }
+  });
 }
 
 // ================== Firebase ==================
@@ -252,7 +305,4 @@ importFile.addEventListener('change', (e) => {
 });
 
 // ================== Inicialização ==================
-// ❌ Removido: saveToLocalStorage(musicList); → estava sobrescrevendo dados
 searchInput.addEventListener('input', handleSearch);
-
-console.log('✅ SiteHinos carregado. Aguardando dados do Firebase...');
