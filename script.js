@@ -62,6 +62,7 @@ function renderResults() {
       return text.replace(regex, '<mark>$1</mark>');
     };
 
+    // ✅ SEM "Autor:", apenas o nome em negrito
     item.innerHTML = `
       <h3>${hl(music.title)}</h3>
       <p><strong>${hl(music.artist)}</strong></p>
@@ -71,21 +72,28 @@ function renderResults() {
       </div>
     `;
 
-    // Alternar exibição da letra (sem afetar o botão)
-    item.querySelector('.lyrics-content').style.display = 'none';
+    // Alternar exibição da letra
+    const lyricsDiv = document.getElementById(`lyrics-${index}`);
+    if (lyricsDiv) {
+      lyricsDiv.style.display = 'none';
+    }
+
     item.addEventListener('click', (e) => {
       if (!e.target.classList.contains('edit-btn')) {
         const div = document.getElementById(`lyrics-${index}`);
-        div.style.display = div.style.display === 'block' ? 'none' : 'block';
+        if (div) {
+          div.style.display = div.style.display === 'block' ? 'none' : 'block';
+        }
       }
     });
 
     resultsContainer.appendChild(item);
   });
 
-  // Eventos de edição
+  // Adiciona eventos aos botões de editar
   document.querySelectorAll('.edit-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Evita abrir/fechar a letra
       const index = parseInt(e.target.dataset.index);
       openEditModal(musicList[index], index);
     });
