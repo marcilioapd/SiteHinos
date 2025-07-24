@@ -38,7 +38,7 @@ try {
   worker = null;
 }
 
-// ================== Renderização ==================
+// ================== Renderização com Botão de Editar ==================
 function renderResults() {
   resultsContainer.innerHTML = '';
   const start = (currentPage - 1) * 10;
@@ -55,32 +55,41 @@ function renderResults() {
     const item = document.createElement('div');
     item.className = 'music-item';
 
-    let highlightedLyrics = music.lyrics;
     const query = searchInput.value.trim();
-    if (query) {
+    const hl = (text) => {
+      if (!query) return text;
       const regex = new RegExp(`(${query})`, 'gi');
-      highlightedLyrics = music.lyrics.replace(regex, '<mark>$1</mark>');
-    }
+      return text.replace(regex, '<mark>$1</mark>');
+    };
 
     item.innerHTML = `
-      <h3>${highlightText(music.title, query)}</h3>
-      <p><strong>Autor:</strong> ${highlightText(music.artist, query)}</p>
-      <div class="lyrics-content" id="lyrics-${index}">${highlightedLyrics}</div>
+      <h3>${hl(music.title)}</h3>
+      <p><strong>${hl(music.artist)}</strong></p>
+      <div class="lyrics-content" id="lyrics-${index}">${hl(music.lyrics)}</div>
+      <div class="music-actions">
+        <button class="edit-btn" data-index="${musicList.indexOf(music)}">✏️ Editar</button>
+      </div>
     `;
 
-    item.addEventListener('click', () => {
-      const div = document.getElementById(`lyrics-${index}`);
-      div.style.display = div.style.display === 'block' ? 'none' : 'block';
+    // Alternar exibição da letra (sem afetar o botão)
+    item.querySelector('.lyrics-content').style.display = 'none';
+    item.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('edit-btn')) {
+        const div = document.getElementById(`lyrics-${index}`);
+        div.style.display = div.style.display === 'block' ? 'none' : 'block';
+      }
     });
 
     resultsContainer.appendChild(item);
   });
-}
 
-function highlightText(text, query) {
-  if (!query) return text;
-  const regex = new RegExp(`(${query})`, 'gi');
-  return text.replace(regex, '<mark>$1</mark>');
+  // Eventos de edição
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const index = parseInt(e.target.dataset.index);
+      openEditModal(musicList[index], index);
+    });
+  });
 }
 
 function renderPagination() {
@@ -121,7 +130,23 @@ function handleSearch() {
   }, 300);
 }
 
-// ================== Firebase: Sincronização ==================
+// ================== Editar Música ==================
+function openEditModal(music, index) {
+  const title = prompt('Nome da música:', music.title);
+  if (title === null) return;
+
+  const artist = prompt('Autor:', music.artist);
+  if (artist === null) return;
+
+  const lyrics = prompt('Letra da música:', music.lyrics);
+  if (lyrics === null) return;
+
+  musicList[index] = { title, artist, lyrics };
+  saveToFirebase(musicList);
+  alert('Música atualizada com sucesso!');
+}
+
+// ================== Firebase ==================
 musicRef.on('value', (snapshot) => {
   const data = snapshot.val();
   musicList = data ? Object.values(data) : [];
@@ -136,8 +161,8 @@ musicRef.on('value', (snapshot) => {
 
 function saveToFirebase(newList) {
   const obj = {};
-  newList.forEach((item, index) => {
-    obj['item_' + index] = item;
+  newList.forEach((item, idx) => {
+    obj[`item_${idx}`] = item;
   });
 
   musicRef.set(obj)
@@ -145,9 +170,9 @@ function saveToFirebase(newList) {
       console.log('✅ Salvo no Firebase');
       saveToLocalStorage(newList);
     })
-    .catch((error) => {
-      console.error('Erro Firebase:', error);
-      alert('Erro de rede. Salvo localmente.');
+    .catch(err => {
+      console.error('Erro Firebase:', err);
+      alert('Erro ao salvar. Verifique a conexão.');
       saveToLocalStorage(newList);
     });
 }
@@ -157,19 +182,6 @@ function saveToLocalStorage(list) {
     localStorage.setItem('music_lyrics_db', JSON.stringify(list));
   } catch (e) {
     console.error('localStorage cheio');
-  }
-}
-
-function loadFromLocalStorage() {
-  try {
-    const local = localStorage.getItem('music_lyrics_db');
-    if (local) {
-      musicList = JSON.parse(local);
-      handleSearch();
-      console.log('📦 Cache local carregado');
-    }
-  } catch (e) {
-    console.error('Erro ao ler localStorage', e);
   }
 }
 
@@ -188,7 +200,7 @@ musicForm.addEventListener('submit', (e) => {
   }
 });
 
-// ================== Backup Manual ==================
+// ================== Backup ==================
 exportBtn.addEventListener('click', () => {
   const dataStr = JSON.stringify(musicList, null, 2);
   const blob = new Blob([dataStr], { type: 'application/json' });
@@ -221,5 +233,5 @@ importFile.addEventListener('change', (e) => {
 });
 
 // ================== Inicialização ==================
-loadFromLocalStorage();
+saveToLocalStorage(musicList); // Atualiza cache
 searchInput.addEventListener('input', handleSearch);
