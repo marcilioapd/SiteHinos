@@ -64,7 +64,6 @@ function renderResults() {
       return text.replace(regex, '<mark>$1</mark>');
     };
 
-    // ✅ Mostra só o nome da música na lista
     item.innerHTML = `
       <h3>${hl(music.title)}</h3>
       <div class="music-actions">
@@ -73,7 +72,6 @@ function renderResults() {
       </div>
     `;
 
-    // ✅ Clique na música → abre detalhes
     item.addEventListener('click', () => {
       openDetailsModal(music);
     });
@@ -81,7 +79,7 @@ function renderResults() {
     resultsContainer.appendChild(item);
   });
 
-  // Eventos de editar
+  // Botões de editar
   document.querySelectorAll('.edit-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -92,12 +90,12 @@ function renderResults() {
     });
   });
 
-  // Eventos de excluir
+  // Botões de excluir
   document.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const index = parseInt(e.target.dataset.index);
-      if (confirm('Tem certeza que deseja excluir esta música?')) {
+      if (confirm('Excluir esta música?')) {
         musicList.splice(index, 1);
         saveToFirebase(musicList);
         renderResults();
@@ -151,15 +149,17 @@ function openDetailsModal(music) {
   overlay.className = 'details-overlay';
 
   overlay.innerHTML = `
+    <div class="details-header">
+      <button class="font-down">-a</button>
+      <button class="font-up">+A</button>
+    </div>
     <div class="details-container">
       <h2>${music.title}</h2>
       <p><strong>Autor:</strong> ${music.artist}</p>
       <div class="lyrics-display">${music.lyrics.replace(/\n/g, '<br>')}</div>
     </div>
     <div class="details-footer">
-      <button class="back">🔙 Voltar</button>
-      <button class="font-down">🔽 Diminuir</button>
-      <button class="font-up">🔼 Aumentar</button>
+      <button class="back">Voltar</button>
     </div>
   `;
 
@@ -167,7 +167,7 @@ function openDetailsModal(music) {
   setTimeout(() => overlay.classList.add('active'), 10);
 
   const lyricsDisplay = overlay.querySelector('.lyrics-display');
-  let fontSize = 16; // px
+  let fontSize = 16;
 
   overlay.querySelector('.back').addEventListener('click', () => {
     overlay.classList.remove('active');
@@ -233,7 +233,7 @@ function openEditModal(music, index) {
   });
 
   deleteBtn.addEventListener('click', () => {
-    if (confirm('Tem certeza que deseja excluir esta música?')) {
+    if (confirm('Excluir esta música?')) {
       musicList.splice(index, 1);
       saveToFirebase(musicList);
       modal.remove();
