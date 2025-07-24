@@ -26,10 +26,9 @@
     firebase.initializeApp(firebaseConfig);
 
     // Referência ao banco de dados
-    const db = firebase.database();
-    const musicRef = db.ref('musicas');
+    const musicRef = firebase.database().ref('musicas');
 
-    console.log('✅ Firebase inicializado');
+    console.log('✅ Firebase inicializado com sucesso!');
   </script>
 </head>
 <body>
