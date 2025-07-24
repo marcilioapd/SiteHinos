@@ -194,121 +194,39 @@ body.dark .music-item h3 {
   color: #ecf0f1;
 }
 
-.music-item p {
-  color: #7f8c8d;
-  font-size: 0.95em;
-  margin: 4px 0;
-}
-
-body.dark .music-item p {
-  color: #bdc3c7;
-}
-
-.lyrics-content {
-  white-space: pre-line;
-  background: #f1f3f5;
-  padding: 15px;
-  border-radius: 6px;
-  margin-top: 10px;
-  font-size: 0.95em;
-  color: #555;
-  display: none;
-  border-left: 3px solid #3498db;
-}
-
-body.dark .lyrics-content {
-  background: #333;
-  color: #ddd;
-  border-left-color: #9b59b6;
-}
-
-/* Botão de Editar */
 .music-actions {
-  text-align: right;
-  margin-top: 8px;
-}
-
-.music-actions button {
-  background: #9b59b6;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  font-size: 0.9em;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-body.dark .music-actions button {
-  background: #8e44ad;
-}
-
-/* Paginação */
-.pagination {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 8px;
-  margin-top: 20px;
-}
-
-.pagination button {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  background: white;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-body.dark .pagination button {
-  background: #333;
-  color: #eee;
-  border-color: #555;
-}
-
-.pagination button.active {
-  background: #3498db;
-  color: white;
-  border-color: #3498db;
-}
-
-body.dark .pagination button.active {
-  background: #9b59b6;
-  border-color: #9b59b6;
-}
-
-/* Responsividade */
-@media (max-width: 600px) {
-  .container {
-    padding: 15px;
-  }
-
-  .form-section input,
-  .form-section textarea {
-    font-size: 0.95em;
-  }
-
-  .pagination button {
-    padding: 6px 10px;
-    font-size: 0.9em;
-  }
-}
-.music-actions {
-  text-align: right;
   margin-top: 8px;
 }
 
 .music-actions button {
-  background: #9b59b6;
-  color: white;
-  border: none;
   padding: 6px 10px;
-  font-size: 0.9em;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 0.9em;
 }
 
-body.dark .music-actions button {
+.music-actions button.edit {
+  background: #9b59b6;
+  color: white;
+}
+
+.music-actions button.delete {
+  background: #e74c3c;
+  color: white;
+}
+
+body.dark .music-actions button.edit {
   background: #8e44ad;
 }
+
+body.dark .music-actions button.delete {
+  background: #c0392b;
+}
+
 /* Modal de Edição */
 .modal-overlay {
   position: fixed;
@@ -407,39 +325,6 @@ body.dark .modal h2 {
   color: #ecf0f1;
 }
 
-/* Botões de ação na lista */
-.music-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.music-actions button {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9em;
-}
-
-.music-actions button.edit {
-  background: #9b59b6;
-  color: white;
-}
-
-.music-actions button.delete {
-  background: #e74c3c;
-  color: white;
-}
-
-body.dark .music-actions button.edit {
-  background: #8e44ad;
-}
-
-body.dark .music-actions button.delete {
-  background: #c0392b;
-}
 /* Tela de Detalhes da Música */
 .details-overlay {
   position: fixed;
@@ -464,6 +349,35 @@ body.dark .details-overlay {
 .details-overlay.active {
   opacity: 1;
   pointer-events: all;
+}
+
+.details-header {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 10px 15px;
+  background: #f1f3f5;
+  border-bottom: 1px solid #ddd;
+}
+
+body.dark .details-header {
+  background: #222;
+  border-bottom-color: #444;
+}
+
+.details-header button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #3498db;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+body.dark .details-header button {
+  background: #2980b9;
 }
 
 .details-container {
@@ -512,8 +426,8 @@ body.dark .lyrics-display {
 
 .details-footer {
   display: flex;
-  justify-content: space-between;
-  padding: 15px 20px;
+  justify-content: center;
+  padding: 15px;
   background: #f1f3f5;
   border-top: 1px solid #ddd;
 }
@@ -524,28 +438,68 @@ body.dark .details-footer {
 }
 
 .details-footer button {
-  padding: 10px 16px;
+  padding: 12px 30px;
   border: none;
   border-radius: 6px;
-  cursor: pointer;
-  font-size: 1em;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.details-footer button.back {
   background: #95a5a6;
   color: white;
+  font-size: 1.1em;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  max-width: 200px;
 }
 
-.details-footer button.font-up,
-.details-footer button.font-down {
+body.dark .details-footer button {
+  background: #7f8c8d;
+}
+
+/* Paginação */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+body.dark .pagination button {
+  background: #333;
+  color: #eee;
+  border-color: #555;
+}
+
+.pagination button.active {
   background: #3498db;
   color: white;
+  border-color: #3498db;
 }
 
-body.dark .details-footer {
-  background: #222;
-  border-top: #444;
+body.dark .pagination button.active {
+  background: #9b59b6;
+  border-color: #9b59b6;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .container {
+    padding: 15px;
+  }
+
+  .form-section input,
+  .form-section textarea {
+    font-size: 0.95em;
+  }
+
+  .pagination button {
+    padding: 6px 10px;
+    font-size: 0.9em;
+  }
 }
