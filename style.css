@@ -291,3 +291,21 @@ body.dark .pagination button.active {
     font-size: 0.9em;
   }
 }
+.music-actions {
+  text-align: right;
+  margin-top: 8px;
+}
+
+.music-actions button {
+  background: #9b59b6;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  font-size: 0.9em;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+body.dark .music-actions button {
+  background: #8e44ad;
+}
