@@ -1,4 +1,4 @@
-// script.js - Letras de Músicas com Firebase (Atualizado)
+// script.js - Letras de Músicas com Firebase (Completo)
 
 const musicForm = document.getElementById('musicForm');
 const searchInput = document.getElementById('searchInput');
@@ -13,7 +13,6 @@ let filteredList = [];
 let currentPage = 1;
 let worker = null;
 let firstSync = true;
-let editingIndex = null; // Para edição
 
 // ================== Modo Escuro ==================
 if (localStorage.getItem('darkMode') === 'true') {
@@ -68,25 +67,15 @@ function renderResults() {
     // ✅ Mostra só o nome da música na lista
     item.innerHTML = `
       <h3>${hl(music.title)}</h3>
-      <div class="lyrics-content" id="lyrics-${pageIndex}">
-        <p><strong>Autor:</strong> ${hl(music.artist)}</p>
-        <pre>${hl(music.lyrics)}</pre>
-      </div>
       <div class="music-actions">
         <button class="edit edit-btn" data-index="${globalIndex}">✏️ Editar</button>
         <button class="delete delete-btn" data-index="${globalIndex}">🗑️ Excluir</button>
       </div>
     `;
 
-    const lyricsDiv = document.getElementById(`lyrics-${pageIndex}`);
-    if (lyricsDiv) lyricsDiv.style.display = 'none';
-
-    item.addEventListener('click', (e) => {
-      if (!e.target.classList.contains('edit-btn') && !e.target.classList.contains('delete-btn')) {
-        if (lyricsDiv) {
-          lyricsDiv.style.display = lyricsDiv.style.display === 'block' ? 'none' : 'block';
-        }
-      }
+    // ✅ Clique na música → abre detalhes
+    item.addEventListener('click', () => {
+      openDetailsModal(music);
     });
 
     resultsContainer.appendChild(item);
@@ -156,10 +145,50 @@ function handleSearch() {
   }, 300);
 }
 
+// ================== Tela de Detalhes da Música ==================
+function openDetailsModal(music) {
+  const overlay = document.createElement('div');
+  overlay.className = 'details-overlay';
+
+  overlay.innerHTML = `
+    <div class="details-container">
+      <h2>${music.title}</h2>
+      <p><strong>Autor:</strong> ${music.artist}</p>
+      <div class="lyrics-display">${music.lyrics.replace(/\n/g, '<br>')}</div>
+    </div>
+    <div class="details-footer">
+      <button class="back">🔙 Voltar</button>
+      <button class="font-down">🔽 Diminuir</button>
+      <button class="font-up">🔼 Aumentar</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  setTimeout(() => overlay.classList.add('active'), 10);
+
+  const lyricsDisplay = overlay.querySelector('.lyrics-display');
+  let fontSize = 16; // px
+
+  overlay.querySelector('.back').addEventListener('click', () => {
+    overlay.classList.remove('active');
+    setTimeout(() => overlay.remove(), 300);
+  });
+
+  overlay.querySelector('.font-up').addEventListener('click', () => {
+    fontSize += 2;
+    lyricsDisplay.style.fontSize = `${fontSize}px`;
+  });
+
+  overlay.querySelector('.font-down').addEventListener('click', () => {
+    if (fontSize > 10) {
+      fontSize -= 2;
+      lyricsDisplay.style.fontSize = `${fontSize}px`;
+    }
+  });
+}
+
 // ================== Modal de Edição Bonito ==================
 function openEditModal(music, index) {
-  editingIndex = index;
-
   const modal = document.createElement('div');
   modal.className = 'modal-overlay active';
 
