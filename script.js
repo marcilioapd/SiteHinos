@@ -1,4 +1,4 @@
-// script.js - Letras de Músicas com Firebase
+// script.js - Letras de Músicas com Firebase (CORRIGIDO)
 
 const musicForm = document.getElementById('musicForm');
 const searchInput = document.getElementById('searchInput');
@@ -68,21 +68,19 @@ function renderResults() {
       <p><strong>${hl(music.artist)}</strong></p>
       <div class="lyrics-content" id="lyrics-${index}">${hl(music.lyrics)}</div>
       <div class="music-actions">
-        <button class="edit-btn" data-index="${musicList.indexOf(music)}">✏️ Editar</button>
+        <button class="edit-btn" data-index="${index}">✏️ Editar</button>
       </div>
     `;
 
-    // Alternar exibição da letra
+    // Esconde a letra por padrão
     const lyricsDiv = document.getElementById(`lyrics-${index}`);
-    if (lyricsDiv) {
-      lyricsDiv.style.display = 'none';
-    }
+    if (lyricsDiv) lyricsDiv.style.display = 'none';
 
+    // Clique na música (não no botão) → mostra/oculta letra
     item.addEventListener('click', (e) => {
       if (!e.target.classList.contains('edit-btn')) {
-        const div = document.getElementById(`lyrics-${index}`);
-        if (div) {
-          div.style.display = div.style.display === 'block' ? 'none' : 'block';
+        if (lyricsDiv) {
+          lyricsDiv.style.display = lyricsDiv.style.display === 'block' ? 'none' : 'block';
         }
       }
     });
@@ -90,10 +88,10 @@ function renderResults() {
     resultsContainer.appendChild(item);
   });
 
-  // Adiciona eventos aos botões de editar
+  // Eventos de edição
   document.querySelectorAll('.edit-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.stopPropagation(); // Evita abrir/fechar a letra
+      e.stopPropagation();
       const index = parseInt(e.target.dataset.index);
       openEditModal(musicList[index], index);
     });
@@ -154,18 +152,22 @@ function openEditModal(music, index) {
   alert('Música atualizada com sucesso!');
 }
 
-// ================== Firebase ==================
-musicRef.on('value', (snapshot) => {
-  const data = snapshot.val();
-  musicList = data ? Object.values(data) : [];
-  
-  if (firstSync) {
-    console.log('✅ Dados carregados do Firebase');
-    firstSync = false;
-    saveToLocalStorage(musicList);
-  }
-  handleSearch();
-});
+// ================== Firebase (certifique-se que musicRef já foi definido no HTML) ==================
+if (typeof musicRef === 'undefined') {
+  console.error('❌ Erro: musicRef não está definido. Verifique o index.html');
+} else {
+  musicRef.on('value', (snapshot) => {
+    const data = snapshot.val();
+    musicList = data ? Object.values(data) : [];
+    
+    if (firstSync) {
+      console.log('✅ Dados carregados do Firebase');
+      firstSync = false;
+      saveToLocalStorage(musicList);
+    }
+    handleSearch();
+  });
+}
 
 function saveToFirebase(newList) {
   const obj = {};
@@ -179,7 +181,7 @@ function saveToFirebase(newList) {
       saveToLocalStorage(newList);
     })
     .catch(err => {
-      console.error('Erro Firebase:', err);
+      console.error('❌ Erro ao salvar no Firebase:', err);
       alert('Erro ao salvar. Verifique a conexão.');
       saveToLocalStorage(newList);
     });
@@ -189,7 +191,7 @@ function saveToLocalStorage(list) {
   try {
     localStorage.setItem('music_lyrics_db', JSON.stringify(list));
   } catch (e) {
-    console.error('localStorage cheio');
+    console.error('❌ localStorage cheio');
   }
 }
 
@@ -220,26 +222,4 @@ exportBtn.addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-importFile.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (event) => {
-    try {
-      const imported = JSON.parse(event.target.result);
-      if (Array.isArray(imported)) {
-        musicList = imported;
-        saveToFirebase(musicList);
-        alert(`Importado: ${imported.length} músicas.`);
-      }
-    } catch (err) {
-      alert('Erro ao ler o arquivo.');
-    }
-  };
-  reader.readAsText(file);
-  importFile.value = '';
-});
-
-// ================== Inicialização ==================
-saveToLocalStorage(musicList); // Atualiza cache
-searchInput.addEventListener('input', handleSearch);
+importFile.addEventListener('change', (e
