@@ -11,21 +11,28 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 
   <script>
-    // 🔥 Substitua com suas credenciais do Firebase
-    const firebaseConfig = {
-         apiKey: "AIzaSyD...",
-         authDomain: "site-hinos.firebaseapp.com",
-         databaseURL: "https://site-hinos-default-rtdb.firebaseio.com",
-         projectId: "site-hinos",
-         storageBucket: "site-hinos.appspot.com",
-         messagingSenderId: "123456789",
-         appId: "1:123456789:web:abc123..."
-    };
+     // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-    // Inicializa o Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const musicRef = db.ref('musicas');
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCU6N52_f4JA2xbG-l6OALXK4s_RKyAOSI",
+    authDomain: "site-hinos.firebaseapp.com",
+    databaseURL: "https://site-hinos-default-rtdb.firebaseio.com",
+    projectId: "site-hinos",
+    storageBucket: "site-hinos.firebasestorage.app",
+    messagingSenderId: "1085753997667",
+    appId: "1:1085753997667:web:ed58e1628c3c0b4aa5fb56",
+    measurementId: "G-Y4HDH364FH"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
   </script>
 </head>
 <body>
